@@ -11,7 +11,13 @@ import type { ToolModule } from '../../../src/tools/module.js';
 
 // Tool files whose exports are not modules; everything else in src/tools is
 // expected to declare a module via defineModule.
-const NON_MODULE_FILES = new Set(['index.ts', 'instructions.ts', 'module.ts', 'registry.ts']);
+const NON_MODULE_FILES = new Set([
+  'index.ts',
+  'instructions.ts',
+  'module.ts',
+  'registry.ts',
+  'zen-view.ts', // split view and Glance tools, registered through the zen module
+]);
 const TOOLS_DIR = new URL('../../../src/tools/', import.meta.url);
 
 describe('Tool registry', () => {
@@ -56,11 +62,11 @@ describe('Tool registry', () => {
       expect(seen.size).toBeGreaterThan(0);
     });
 
-    it('marks prefs and privileged as privileged modules', () => {
+    it('marks prefs, privileged, ublock and zen as privileged modules', () => {
       const privileged = MODULES.filter((m) => m.privileged)
         .map((m) => m.name)
         .sort();
-      expect(privileged).toEqual(['prefs', 'privileged']);
+      expect(privileged).toEqual(['prefs', 'privileged', 'ublock', 'zen']);
     });
 
     it('marks bidi and launch as moz-only modules', () => {

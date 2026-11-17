@@ -31,6 +31,8 @@ import { module as debugging } from './debugging.js';
 import { module as prefs } from './firefox-prefs.js';
 import { module as privileged } from './privileged-context.js';
 import { module as bidi } from './bidi.js';
+import { module as zen } from './zen.js';
+import { module as ublock } from './ublock.js';
 import type { ToolModule } from './module.js';
 
 export type { ToolDefinition, ToolEntry, ToolModule } from './module.js';
@@ -55,6 +57,8 @@ export const MODULES: ToolModule[] = [
   prefs,
   privileged,
   bidi,
+  zen,
+  ublock,
 ];
 
 export const MODULE_NAMES = MODULES.map((m) => m.name);
@@ -78,13 +82,16 @@ const BASIC = [
 const DEVELOPER = [...BASIC, 'debugging', 'network', 'console', 'profiler'];
 // MOZILLA: (all tools) Also includes privileged tools only useful for firefox
 // developers.
-const MOZILLA = [...DEVELOPER, 'launch', 'prefs', 'privileged', 'bidi'];
+const MOZILLA = [...DEVELOPER, 'launch', 'prefs', 'privileged', 'bidi', 'zen', 'ublock'];
+// ZEN: Zen Browser tab organization only.
+const ZEN = ['pages', 'zen', 'ublock'];
 
 export const PRESETS: Record<string, string[]> = {
   slim: SLIM,
   basic: BASIC,
   developer: DEVELOPER,
   mozilla: MOZILLA,
+  zen: ZEN,
   all: MODULE_NAMES,
 };
 

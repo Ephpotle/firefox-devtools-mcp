@@ -11,27 +11,29 @@ the Mozilla-internal build; the public package drops both.
 
 ## Modules and presets
 
-| Module                    | Tools | slim | basic | developer | mozilla | all |
-| ------------------------- | ----- | ---- | ----- | --------- | ------- | --- |
-| `pages`                   | 6     | yes  | yes   | yes       | yes     | yes |
-| `snapshot`                | 3     | yes  | yes   | yes       | yes     | yes |
-| `input`                   | 8     | yes  | yes   | yes       | yes     | yes |
-| `network`                 | 3     | -    | -     | yes       | yes     | yes |
-| `console`                 | 2     | -    | -     | yes       | yes     | yes |
-| `screenshot`              | 2     | yes  | yes   | yes       | yes     | yes |
-| `print`                   | 1     | -    | yes   | yes       | yes     | yes |
-| `downloads`               | 3     | -    | yes   | yes       | yes     | yes |
-| `utilities`               | 4     | -    | yes   | yes       | yes     | yes |
-| `management`              | 3     | -    | yes   | yes       | yes     | yes |
-| `launch` (moz build)      | 1     | -    | -     | -         | yes     | yes |
-| `webextension`            | 3     | -    | yes   | yes       | yes     | yes |
-| `profiler`                | 3     | -    | -     | yes       | yes     | yes |
-| `screencast`              | 2     | -    | yes   | yes       | yes     | yes |
-| `script`                  | 1     | -    | yes   | yes       | yes     | yes |
-| `debugging`               | 6     | -    | -     | yes       | yes     | yes |
-| `prefs` (privileged)      | 2     | -    | -     | -         | yes     | yes |
-| `privileged` (privileged) | 3     | -    | -     | -         | yes     | yes |
-| `bidi` (moz build)        | 1     | -    | -     | -         | yes     | yes |
+| Module                    | Tools | slim | basic | developer | mozilla | zen | all |
+| ------------------------- | ----- | ---- | ----- | --------- | ------- | --- | --- |
+| `pages`                   | 6     | yes  | yes   | yes       | yes     | yes | yes |
+| `snapshot`                | 3     | yes  | yes   | yes       | yes     | -   | yes |
+| `input`                   | 8     | yes  | yes   | yes       | yes     | -   | yes |
+| `network`                 | 3     | -    | -     | yes       | yes     | -   | yes |
+| `console`                 | 2     | -    | -     | yes       | yes     | -   | yes |
+| `screenshot`              | 2     | yes  | yes   | yes       | yes     | -   | yes |
+| `print`                   | 1     | -    | yes   | yes       | yes     | -   | yes |
+| `downloads`               | 3     | -    | yes   | yes       | yes     | -   | yes |
+| `utilities`               | 4     | -    | yes   | yes       | yes     | -   | yes |
+| `management`              | 3     | -    | yes   | yes       | yes     | -   | yes |
+| `launch` (moz build)      | 1     | -    | -     | -         | yes     | -   | yes |
+| `webextension`            | 3     | -    | yes   | yes       | yes     | -   | yes |
+| `profiler`                | 3     | -    | -     | yes       | yes     | -   | yes |
+| `screencast`              | 2     | -    | yes   | yes       | yes     | -   | yes |
+| `script`                  | 1     | -    | yes   | yes       | yes     | -   | yes |
+| `debugging`               | 6     | -    | -     | yes       | yes     | -   | yes |
+| `prefs` (privileged)      | 2     | -    | -     | -         | yes     | -   | yes |
+| `privileged` (privileged) | 3     | -    | -     | -         | yes     | -   | yes |
+| `bidi` (moz build)        | 1     | -    | -     | -         | yes     | -   | yes |
+| `zen` (privileged)        | 9     | -    | -     | -         | yes     | yes | yes |
+| `ublock` (privileged)     | 9     | -    | -     | -         | yes     | yes | yes |
 
 ## Tools that accept `saveTo`
 
@@ -53,6 +55,7 @@ accepted paths.
 | `evaluate_script`            | `script`     | yes       |
 | `evaluate_privileged_script` | `privileged` | yes       |
 | `send_bidi_command`          | `bidi`       | yes       |
+| `zen_list_tabs`              | `zen`        | -         |
 
 ## Contents
 
@@ -75,6 +78,8 @@ accepted paths.
 - [prefs](#prefs): Get and set Firefox preferences.
 - [privileged](#privileged): Access privileged ("chrome") browsing contexts.
 - [bidi](#bidi): Send raw WebDriver BiDi commands.
+- [zen](#zen): Organize Zen Browser Spaces, folders and tabs.
+- [ublock](#ublock): uBlock per site.
 
 ## pages
 
@@ -721,3 +726,197 @@ Parameters:
 - `params` (object, optional) - Command parameters (default: {})
 - `saveTo` (boolean | string, optional) - Save the result to a file as JSON instead of returning it inline. Pass a file path, an existing directory (generated file inside), or true (generated file under ~/.firefox-devtools-mcp/output/). Relative paths resolve against the current working directory.
 - `preview` (number, optional) - Number of characters of the saved result to return inline as a preview when saveTo is used. Omit for no preview.
+
+## zen
+
+Organize Zen Browser Spaces, folders and tabs.
+
+Privileged module: requires the Mozilla-internal build.
+
+### `zen_list_spaces`
+
+_Read-only._
+
+List Zen Spaces with their ids, folders and tab counts.
+
+No parameters.
+
+### `zen_list_tabs`
+
+_Read-only._
+
+List Zen tabs across all Spaces, including unloaded tabs. One line per tab: id | space[/folder] | flags (E=essential, P=pinned, *=selected) | days since last access | title | url. Use the ids with zen_move_tabs, zen_move_to_folder and zen_close_tabs.
+
+Parameters:
+
+- `space` (string, optional) - Only tabs in this Space (name or id)
+- `staleDays` (number, optional) - Only tabs not accessed for at least this many days
+- `query` (string, optional) - Case-insensitive substring matched against title and url
+- `includeEssentials` (boolean, optional) - Include Essentials (default true)
+- `includePinned` (boolean, optional) - Include pinned tabs (default true)
+- `limit` (number, optional) - Max lines to return (default 200)
+- `offset` (number, optional) - Skip this many matching tabs (default 0)
+- `saveTo` (boolean | string, optional) - Save all matching tabs as JSON to a file instead of listing them. A path, a directory, or true for ~/.firefox-devtools-mcp/output/.
+
+### `zen_create_space`
+
+Create a Zen Space without switching to it. Returns the existing Space if one has the same name.
+
+Parameters:
+
+- `name` (string, required) - Space name
+- `icon` (string, optional) - Optional emoji or icon for the Space
+- `allowDuplicate` (boolean, optional) - Create even if a Space with this name exists
+
+### `zen_move_tabs`
+
+Move tabs (by id from zen_list_tabs) to a Zen Space. Essentials are skipped.
+
+Parameters:
+
+- `tabIds` (array of string, required) - Tab ids
+- `space` (string, required) - Target Space name or id
+
+### `zen_move_to_folder`
+
+Put tabs into a Zen folder in a Space, creating the folder if it does not exist. Folders live in the pinned section, so the tabs become pinned. Essentials are skipped.
+
+Parameters:
+
+- `tabIds` (array of string, required) - Tab ids
+- `folder` (string, required) - Folder name
+- `space` (string, optional) - Space name or id (default: active Space)
+
+### `zen_close_tabs`
+
+Close tabs by id. Before closing, writes a JSON archive (title, url, space, folder) of the tabs and returns its path. Use dryRun to preview. Essentials and pinned tabs are kept unless includePinned is true.
+
+Parameters:
+
+- `tabIds` (array of string, required) - Tab ids
+- `dryRun` (boolean, optional) - Only report what would be closed (default false)
+- `includePinned` (boolean, optional) - Also close pinned tabs and Essentials (default false)
+- `archiveTo` (string, optional) - Archive file or directory (default: ~/.firefox-devtools-mcp/output/)
+
+### `zen_view`
+
+_Read-only._
+
+What is on screen in Zen: the tab in focus, the other tabs sharing its split view and their layout, and whether a Glance preview is open over the page. Use it when the user refers to "these two pages", "the other pane" or "the preview". Tab ids are the same numbers the page tools use.
+
+No parameters.
+
+### `zen_split_view`
+
+Show tabs next to each other in a Zen split view. Give tabs (ids from the page tools or zen_list_tabs), urls to open as new tabs, or both. With a single tab or url, it is split with the page in focus. Tabs must be in the Space that is showing; Essentials cannot be split.
+
+Parameters:
+
+- `tabs` (array of number | string, optional) - Existing tabs to show together
+- `urls` (array of string, optional) - Addresses to open in new tabs and include
+- `layout` (`side-by-side` | `stacked` | `grid`, optional) - side-by-side (default), stacked, or grid
+
+### `zen_unsplit_view`
+
+End a split view: its tabs stay open as ordinary tabs. Without tab, ends the split view in focus.
+
+Parameters:
+
+- `tab` (number | string, optional) - Any tab of the split view to end
+
+## ublock
+
+uBlock per site.
+
+Privileged module: requires the Mozilla-internal build.
+
+### `ublock_status`
+
+_Read-only._
+
+What uBlock Origin is doing on a tab: whether it is on for the site, the per-site switches, the dynamic rules in effect, and every host the page contacted with how many requests were blocked and allowed. Look here before changing anything.
+
+Parameters:
+
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_set_switch`
+
+Turn one of uBlock Origin's per-site switches on or off for the tab's site. no-scripting ON blocks all JavaScript on the site; no-cosmetic-filtering ON stops hiding page elements; no-large-media ON blocks large images and video; no-remote-fonts ON blocks web fonts; no-popups ON blocks popup windows. Temporary until the browser restarts unless kept with ublock_keep_changes.
+
+Parameters:
+
+- `switch` (`no-scripting` | `no-cosmetic-filtering` | `no-popups` | `no-large-media` | `no-remote-fonts`, required)
+- `on` (boolean, required)
+- `reload` (boolean, optional) - Reload the tab afterwards so the change takes effect
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_set_rule`
+
+Set one uBlock Origin dynamic filtering rule for the tab's site. Either name a target host (from ublock_status) to block or allow everything from that host, or leave target out and give a type: 3p (all third-party), 3p-script, 3p-frame, 1p-script, inline-script, image. action: block; noop (stop dynamic rules from blocking it, static filter lists still apply); allow (let it through even past the filter lists — use sparingly); none (remove the rule). Temporary until the browser restarts unless kept with ublock_keep_changes.
+
+Parameters:
+
+- `target` (string, optional) - Host the page loads from, e.g. ads.example.com. Omit to use type instead.
+- `type` (`image` | `3p` | `inline-script` | `1p-script` | `3p-script` | `3p-frame`, optional)
+- `action` (`none` | `block` | `allow` | `noop`, required)
+- `everywhere` (boolean, optional) - Apply on every website instead of only this site (default false)
+- `reload` (boolean, optional) - Reload the tab afterwards so the change takes effect
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_set_advanced_mode`
+
+Turn uBlock Origin's 'I am an advanced user' setting on or off. ublock_set_rule only has an effect while it is on. It also makes uBlock's own panel show its per-host rule grid. Permanent until changed back.
+
+Parameters:
+
+- `on` (boolean, required)
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_keep_changes`
+
+Make the temporary switches and rules for the tab's site permanent, so they survive a browser restart.
+
+Parameters:
+
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_undo_changes`
+
+Throw away the temporary switches and rules for the tab's site, going back to what was last kept.
+
+Parameters:
+
+- `reload` (boolean, optional) - Reload the tab afterwards so the change takes effect
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_list_filters`
+
+_Read-only._
+
+The lines in uBlock Origin's "My filters". Give query to only see lines containing it (e.g. the site's domain).
+
+Parameters:
+
+- `query` (string, optional)
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_add_filters`
+
+Add lines to uBlock Origin's "My filters". Permanent (remove with ublock_remove_filters). Each must be tied to a site: a cosmetic filter such as example.com##.ad-banner hides elements; a network filter such as ||tracker.example^$domain=example.com blocks requests; @@||cdn.example^$script,domain=example.com allows them. Prefer ublock_set_rule for anything temporary.
+
+Parameters:
+
+- `filters` (array of string, required) - One filter per entry
+- `reload` (boolean, optional) - Reload the tab afterwards so the change takes effect
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
+
+### `ublock_remove_filters`
+
+Remove lines from uBlock Origin's "My filters". Each entry must match a line exactly (see ublock_list_filters).
+
+Parameters:
+
+- `filters` (array of string, required)
+- `reload` (boolean, optional) - Reload the tab afterwards so the change takes effect
+- `tab` (string, optional) - Part of the address of the tab to act on (default: the tab in front)
