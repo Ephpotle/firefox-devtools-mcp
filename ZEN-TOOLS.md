@@ -4,13 +4,13 @@ This branch of a fork of [mozilla/firefox-devtools-mcp](https://github.com/mozil
 
 All of these run in Zen's privileged browser window, because a WebExtension cannot reach Spaces, split views or another add-on.
 
-| Tools | What they do |
-| --- | --- |
-| `zen_list_spaces`, `zen_list_tabs` | List Spaces (workspaces), folders and tabs, including unloaded tabs |
-| `zen_create_space`, `zen_move_tabs`, `zen_move_to_folder`, `zen_close_tabs` | Reorganise tabs; closing archives the tabs to a file first and supports a dry run |
-| `zen_view`, `zen_split_view`, `zen_unsplit_view` | See what shares the screen (split view, Glance) and open or end split views |
-| `ublock_status`, `ublock_list_filters` | What uBlock Origin is doing on a tab; the lines in "My filters" |
-| `ublock_set_switch`, `ublock_set_rule`, `ublock_set_advanced_mode`, `ublock_keep_changes`, `ublock_undo_changes`, `ublock_add_filters`, `ublock_remove_filters` | Tune uBlock Origin for the site in a tab |
+| Tools                                                                                                                                                           | What they do                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `zen_list_spaces`, `zen_list_tabs`                                                                                                                              | List Spaces (workspaces), folders and tabs, including unloaded tabs               |
+| `zen_create_space`, `zen_move_tabs`, `zen_move_to_folder`, `zen_close_tabs`                                                                                     | Reorganise tabs; closing archives the tabs to a file first and supports a dry run |
+| `zen_view`, `zen_split_view`, `zen_unsplit_view`                                                                                                                | See what shares the screen (split view, Glance) and open or end split views       |
+| `ublock_status`, `ublock_list_filters`                                                                                                                          | What uBlock Origin is doing on a tab; the lines in "My filters"                   |
+| `ublock_set_switch`, `ublock_set_rule`, `ublock_set_advanced_mode`, `ublock_keep_changes`, `ublock_undo_changes`, `ublock_add_filters`, `ublock_remove_filters` | Tune uBlock Origin for the site in a tab                                          |
 
 They are in `src/tools/zen.ts`, `src/tools/zen-view.ts` and `src/tools/ublock.ts`, and are selected with `--tool-preset zen`.
 
@@ -39,6 +39,8 @@ node dist.moz/index.js --connect-existing --marionette-port 2828 --tool-preset z
 ```
 
 Only one client can hold the connection at a time.
+
+Set `ZEN_TOOLS_FIXED_OUTPUT=1` when a model may call the read-only tools without asking the user: `zen_list_tabs` then cannot save to a file, and `zen_close_tabs` archives only to the default folder, so no tool writes to a path the model chose.
 
 ## Caveats
 

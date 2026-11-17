@@ -37,6 +37,11 @@ export interface ZenTab {
   lastAccessed: number;
 }
 
+// A client that lets a model call these tools without asking the user each time can set
+// ZEN_TOOLS_FIXED_OUTPUT=1: the tools then never write to a path the caller chose.
+// Listing cannot save to a file, and closed tabs are archived only to the default folder.
+const FIXED_OUTPUT = !!process.env.ZEN_TOOLS_FIXED_OUTPUT;
+
 const SYSTEM_ACCESS_ERROR =
   'Privileged context access not enabled. Start Zen with MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1 and use the moz build of this server.';
 
@@ -395,6 +400,11 @@ export const handleListTabs = defineToolHandler(async (args: unknown): Promise<M
   const matching = filterTabs(tabs, spaces, a, now).sort((x, y) => x.lastAccessed - y.lastAccessed);
   const names = new Map(spaces.map((s) => [s.id, s.name]));
 
+  if (a.saveTo && FIXED_OUTPUT) {
+    throw new Error(
+      'Saving the list to a file is switched off in this setup. Use query, staleDays, limit and offset.'
+    );
+  }
   if (a.saveTo) {
     const data = matching.map((t) => ({
       ...t,
@@ -542,7 +552,7 @@ export const handleCloseTabs = defineToolHandler(
     };
     const saved = await saveOutput(
       JSON.stringify(archive, null, 2),
-      a.archiveTo,
+      FIXED_OUTPUT ? undefined : a.archiveTo,
       'zen-closed-tabs'
     );
     const r = await runZen<{ closed: string[]; stillOpen: string[] }>(SCRIPTS.closeTabs, {
